@@ -10,17 +10,34 @@ from game_player import GamePlayer
 
 def compute_lspi_iteration(encoded_states, encoded_next_states, actions, rewards, done_flags, linear_policy, gamma):
     # compute the next w given the data.
-    assert False, "implement compute_lspi_iteration function"
+    length = len(encoded_states[0])
+    A = np.zeros((length, length))
+    b = np.zeros((length, 1))
+    encoded_states_arr = np.asarray(encoded_states)
+    encoded_next_states_arr = np.asarray(encoded_next_states)
+
+    for ii, done in enumerate(done_flags):
+        if not done:
+            curr_state = encoded_states[ii].copy()
+            curr_state = np.reshape(np.asarray(curr_state), (length, 1))
+            next_state = encoded_next_states_arr[ii].copy()
+            next_state = np.reshape(np.asarray(next_state), (length, 1))
+            A = A + curr_state @ (gamma * next_state.T - next_state.T)
+            b = b + rewards[ii] * curr_state
+
+    next_w = np.linalg.inv(A) @ b
+    print(next_w.shape)
     return next_w
 
 
 if __name__ == '__main__':
-    samples_to_collect = 100000
+    samples_to_collect = 10
+    # samples_to_collect = 100000
     # samples_to_collect = 150000
     # samples_to_collect = 10000
     number_of_kernels_per_dim = [12, 10]
     gamma = 0.99
-    w_updates = 100
+    w_updates = 20
     evaluation_number_of_games = 10
     evaluation_max_steps_per_game = 1000
 
