@@ -12,3 +12,6 @@ def data_collection(car_env, N=100000):
     print('The STD of the position: ' + str(std[0]))
     print('The mean speed: ' + str(mean[1]))
     print('The STD of the speed: ' + str(std[1]))
+
+
+
