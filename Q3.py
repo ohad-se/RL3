@@ -89,14 +89,18 @@ def lspi_data_depandence(samples_to_collect_arr, seeds):
     np.savez('Answers/data_Q3_6', data1=np.asarray(success_per_iter_per_samples[0])
                                 , data2=np.asarray(success_per_iter_per_samples[1])
                                 , data3=np.asarray(success_per_iter_per_samples[2]))
-
+    # data = np.load('Answers/data_Q3_6.npz')
+    # success_per_iter_per_samples = []
+    # success_per_iter_per_samples.append(data['data1'])
+    # success_per_iter_per_samples.append(data['data2'])
+    # success_per_iter_per_samples.append(data['data3'])
     fig, ax = plt.subplots()
     line1, = ax.plot(range(len(success_per_iter_per_samples[0])), success_per_iter_per_samples[0],
-                     label=str(samples_to_collect_arr[0]), linewidth=1, color='black')
+                     label='samples = ' + str(samples_to_collect_arr[0]), linewidth=1, color='black')
     line2, = ax.plot(range(len(success_per_iter_per_samples[1])), success_per_iter_per_samples[1],
-                     label=str(samples_to_collect_arr[1]), linewidth=1, color='black')
+                     label='samples = ' + str(samples_to_collect_arr[1]), linewidth=1, color='red')
     line3, = ax.plot(range(len(success_per_iter_per_samples[2])), success_per_iter_per_samples[2],
-                     label=str(samples_to_collect_arr[2]), linewidth=1, color='black')
+                     label='samples = ' + str(samples_to_collect_arr[2]), linewidth=1, color='blue')
 
     plt.xlabel('Iteration')
     plt.ylabel("Success Rate")

@@ -40,12 +40,12 @@ class Solver:
     def get_all_q_vals(self, features):
         all_vals = np.zeros(self._actions)
         for a in range(self._actions):
-            all_vals[a] = solver.get_q_val(features, a)
+            all_vals[a] = self.get_q_val(features, a)
         return all_vals
 
     def get_max_action(self, state):
-        sparse_features = solver.get_features(state)
-        q_vals = solver.get_all_q_vals(sparse_features)
+        sparse_features = self.get_features(state)
+        q_vals = self.get_all_q_vals(sparse_features)
         return np.argmax(q_vals)
 
     def get_state_action_features(self, state, action):
