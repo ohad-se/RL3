@@ -8,35 +8,22 @@ from linear_policy import LinearPolicy
 from game_player import GamePlayer
 
 
-
 def compute_lspi_iteration(encoded_states, encoded_next_states, actions, rewards, done_flags, linear_policy, gamma):
     # compute the next w given the data.
-    encoded_states_q_features = linear_policy.get_q_features(encoded_states, actions)
     pi = linear_policy.get_max_action(encoded_next_states)
-    encoded_next_states_q_features = linear_policy.get_q_features(encoded_next_states, pi)
-    length = len(linear_policy.w)
+    features = linear_policy.get_q_features(encoded_states, actions)
+    next_features = linear_policy.get_q_features(encoded_next_states, pi)
+    next_features = next_features * np.expand_dims((1 - done_flags), axis=1)
 
-    A = encoded_next_states_q_features.T @ (gamma*encoded_next_states_q_features - encoded_states_q_features)
-    b = np.reshape(rewards @ encoded_states_q_features, (length ,1))
-
-    # A = np.zeros((length, length))
-    # b = np.zeros((length, 1))
-
-    # for ii, done in enumerate(done_flags):
-    #     curr_state = encoded_states_q_features[ii].copy()
-    #     curr_state = np.reshape(np.asarray(curr_state), (length, 1))
-    #     next_state = encoded_next_states_q_features[ii].copy()
-    #     next_state = np.reshape(np.asarray(next_state), (length, 1))
-    #     A = A + curr_state @ (gamma * next_state.T - curr_state.T)
-    #     b = b + rewards[ii] * curr_state
-    #     if done:
-    #         break
+    A = features.T @ (features - gamma*next_features)
+    b = features.T @ np.expand_dims(rewards, axis=1)
     next_w = np.linalg.inv(A) @ b
+
     return next_w
 
 
 if __name__ == '__main__':
-    samples_to_collect = 50000
+    samples_to_collect = 100000
     # samples_to_collect = 150000
     # samples_to_collect = 10000
     number_of_kernels_per_dim = [12, 10]
