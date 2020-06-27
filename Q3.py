@@ -114,8 +114,8 @@ def lspi_data_depandence(samples_to_collect_arr, seeds):
 if __name__ == '__main__':
     samples_to_collect_arr = [10000, 100000, 150000]
     seeds = [123, 234, 345]
-    # lspi_eval(samples_to_collect_arr[1], seeds)
-    lspi_data_depandence(samples_to_collect_arr, seeds)
+    lspi_eval(samples_to_collect_arr[1], seeds)
+    # lspi_data_depandence(samples_to_collect_arr, seeds)
 
 
 

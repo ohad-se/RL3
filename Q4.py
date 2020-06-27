@@ -136,10 +136,21 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
 
         episodes_gain.append(np.mean(np.asarray(episodes_gain_tmp), axis=0))
 
-    # data = np.load('Answers/data_Q4_4.npz')
-    # episodes_gain = data['episodes_gain']
-
     np.savez('Answers/data_Q4_4', episodes_gain=episodes_gain)
+
+    #
+    # # save np.load
+    # np_load_old = np.load
+    # # modify the default parameters of np.load
+    # np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
+    #
+    # data = np.load('Answers/data_Q4_4.npz')
+    #
+    #
+    # # restore np.load for future normal usage
+    # np.load = np_load_old
+    #
+    # episodes_gain = data['episodes_gain']
 
     fig, ax = plt.subplots()
     line = []
@@ -157,8 +168,9 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
 
 
 if __name__ == '__main__':
-    max_episodes = 300
-    seeds = [345, 234, 123]
+    max_episodes = 500
+    seeds = [123] #, 234, 123]
     epsilons = [1, 0.75, 0.5, 0.3, 0.01]
     # Q_learning_eval(seeds, max_episodes=max_episodes)
     Q_learning_exploration_eval(seeds, epsilons, max_episodes=max_episodes)
+
