@@ -52,7 +52,8 @@ def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000, epsilon_decrea
 
     return episodes_gain, success_rates, bottom_state_val, episodes_bellman_err
 
-def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000, save=True):
+def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000, epsilon_decrease = 1., start_at_bottom=False,
+                    save=True):
     bottom_state_val = []
     success_rates = []
     episodes_gain = []
@@ -60,7 +61,8 @@ def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000, save=True):
     episodes = max_episodes
 
     for seed in seeds:
-        gain, rate, val, err = run_Q_learning(seed, max_episodes=episodes)
+        gain, rate, val, err = run_Q_learning(seed, max_episodes=episodes, epsilon_decrease=epsilon_decrease,
+                                              start_at_bottom=start_at_bottom)
         episodes = min(episodes, len(gain))
         episodes_gain.append(gain)
         success_rates.append(rate)
