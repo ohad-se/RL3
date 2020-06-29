@@ -61,7 +61,7 @@ class Solver:
         max_action = self.get_max_action(next_state)
         current_q = self.get_q_val(features, action)
         next_q = self.get_q_val(next_features, max_action)
-        bellman_error = current_q - (reward + self.gamma * next_q)
+        bellman_error = current_q - (reward + self.gamma * next_q*(1-done))
         next_theta = self.theta - self.learning_rate * bellman_error * self.get_state_action_features(state, action)
         self.theta = next_theta
         return abs(bellman_error)

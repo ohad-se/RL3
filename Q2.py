@@ -19,10 +19,13 @@ def preliminary(car_env):
         extractor = rbfe.RadialBasisFunctionExtractor(number_of_kernels_per_dim)
         states = [x for x in itertools.product(position, speed)]
         features = np.asarray(extractor.encode_states_with_radial_basis_functions(states))
-        changes = np.max(features,axis=0) - np.min(features,axis=0)
+        # changes = np.max(features, axis=0) - np.min(features, axis=0)
+        changes = np.max(features, axis=0)
         max_changing_features_index = np.argsort(changes)
 
+        # feature_1 = np.reshape(features[:, 0], (n_pos, n_speed))
         feature_1 = np.reshape(features[:, max_changing_features_index[-1]], (n_pos, n_speed))
+        # feature_2 = np.reshape(features[:, 1], (n_pos, n_speed))
         feature_2 = np.reshape(features[:, max_changing_features_index[-2]], (n_pos, n_speed))
 
         return feature_1, feature_2
@@ -38,8 +41,8 @@ def preliminary(car_env):
         ax.set_ylabel('Speed', fontsize=10)
         ax.set_zlabel('Value', fontsize=10, rotation=60)
         ax.set_title('Feature ' + str(num_of_feature))
-        plt.savefig('Answers/Q2_features_' + str(num_of_feature) + '.png')
-        # plt.show()
+        # plt.savefig('Answers/Q2_features_' + str(num_of_feature) + '.png')
+        plt.show()
 
     feature_1, feature_2 = get_features()
     plot_fiture(feature_1, 1)

@@ -81,14 +81,15 @@ def lspi_eval(samples_to_collect, seeds, save=True):
     else:
         return avg_success_per_iter
 
-def lspi_data_depandence(samples_to_collect_arr, seeds):
+def lspi_data_depandence(samples_to_collect_arr, seeds, save=True):
     success_per_iter_per_samples = []
     for samples_num in samples_to_collect_arr:
         success_per_iter_per_samples.append(lspi_eval(samples_num, seeds, False))
 
-    np.savez('Answers/data_Q3_6', data1=np.asarray(success_per_iter_per_samples[0])
-                                , data2=np.asarray(success_per_iter_per_samples[1])
-                                , data3=np.asarray(success_per_iter_per_samples[2]))
+    if save:
+        np.savez('Answers/data_Q3_6', data1=np.asarray(success_per_iter_per_samples[0])
+                                    , data2=np.asarray(success_per_iter_per_samples[1])
+                                    , data3=np.asarray(success_per_iter_per_samples[2]))
     # data = np.load('Answers/data_Q3_6.npz')
     # success_per_iter_per_samples = []
     # success_per_iter_per_samples.append(data['data1'])
@@ -107,15 +108,17 @@ def lspi_data_depandence(samples_to_collect_arr, seeds):
     plt.title("Mean Success Rate as a Function of Iteration")
     plt.grid()
     ax.legend()
-    plt.savefig('Answers/Q3_6')
-    plt.close()
-
+    if save:
+        plt.savefig('Answers/Q3_6')
+        plt.close()
+    else:
+        plt.show()
 
 if __name__ == '__main__':
     samples_to_collect_arr = [10000, 100000, 150000]
     seeds = [123, 234, 345]
-    lspi_eval(samples_to_collect_arr[1], seeds)
-    # lspi_data_depandence(samples_to_collect_arr, seeds)
+    lspi_eval(samples_to_collect_arr[1], seeds, save=False)
+    lspi_data_depandence(samples_to_collect_arr, seeds, save=False)
 
 
 

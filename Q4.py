@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-from data_transformer import DataTransformer
 from mountain_car_with_data_collection import MountainCarWithResetEnv
-from radial_basis_function_extractor import RadialBasisFunctionExtractor
 
 from q_learn_mountain_car import Solver
 from q_learn_mountain_car import run_episode
@@ -13,8 +10,8 @@ def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000):
     np.random.seed(seed)
     env.seed(seed)
 
-    gamma = 0.99
-    learning_rate = 0.01
+    gamma = 0.999
+    learning_rate = 0.05
     epsilon_decrease = 1.
     epsilon_min = 0.05
 
@@ -43,8 +40,6 @@ def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000):
         bottom_state_max_action = solver.get_max_action(bottom_state)
         bottom_state_val.append(solver.get_q_val(bottom_state_features, bottom_state_max_action))
 
-        # print(f'after {episode_index}, reward = {episode_gain}, epsilon {epsilon_current}, average error {mean_delta}')
-
         # termination condition:
         if episode_index % 10 == 9:
             test_gains = [run_episode(env, solver, is_train=False, epsilon=0.)[0] for _ in range(10)]
@@ -57,7 +52,7 @@ def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000):
 
     return episodes_gain, success_rates, bottom_state_val, episodes_bellman_err
 
-def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000):
+def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000, save=True):
     bottom_state_val = []
     success_rates = []
     episodes_gain = []
@@ -74,7 +69,7 @@ def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000):
 
     for ii in range(len(episodes_gain)):
         episodes_gain[ii] = episodes_gain[ii][:episodes]
-        success_rates[ii] = success_rates[ii][:int((episodes+1)/10)]
+        success_rates[ii] = success_rates[ii][:(int((episodes+1)/10)+1)]
         bottom_state_val[ii] = bottom_state_val[ii][:episodes]
         episodes_bellman_err[ii] = episodes_bellman_err[ii][:episodes]
 
@@ -92,15 +87,15 @@ def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000):
     # episodes_gain = data['episodes_gain']
     # success_rates = data['success_rates']
     # bottom_state_val = data['bottom_state_val']
-    # episodes_bellman_err = data['episodes_bellman_err']
+    # episodes_bellman_err_avg = data['episodes_bellman_err_avg']
     # episodes = len(episodes_gain)
-
-    np.savez('Answers/data_Q4_3', episodes_gain=episodes_gain, success_rates=success_rates
-                        , bottom_state_val=bottom_state_val, episodes_bellman_err=episodes_bellman_err
-                        ,episodes_bellman_err_avg=episodes_bellman_err_avg)
+    if save:
+        np.savez('Answers/data_Q4_3', episodes_gain=episodes_gain, success_rates=success_rates
+                            , bottom_state_val=bottom_state_val, episodes_bellman_err=episodes_bellman_err
+                            ,episodes_bellman_err_avg=episodes_bellman_err_avg)
 
     x1 = range(1, episodes+1)
-    x2 = range(1, len(success_rates)*10 + 1, 10)
+    x2 = range(0, len(success_rates)*10 , 10)
 
     list = [episodes_gain, success_rates, bottom_state_val, episodes_bellman_err_avg]
     titles = ['Total Reward',
@@ -116,10 +111,13 @@ def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000):
         plt.ylabel(titles[ii])
         plt.title(titles[ii] + ' Vs. Training episodes')
         plt.grid()
-        plt.savefig("Answers/Q4_3_" + titles[ii].replace(' ', '_'))
-        plt.close()
+        if save:
+            plt.savefig("Answers/Q4_3_" + titles[ii].replace(' ', '_'))
+            plt.close()
+        else:
+            plt.show()
 
-def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
+def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000, save=True):
 
     episodes_gain = []
 
@@ -135,10 +133,10 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
             episodes_gain_tmp[ii] = episodes_gain_tmp[ii][:episodes]
 
         episodes_gain.append(np.mean(np.asarray(episodes_gain_tmp), axis=0))
+    if save:
+        np.savez('Answers/data_Q4_4', episodes_gain=episodes_gain)
 
-    np.savez('Answers/data_Q4_4', episodes_gain=episodes_gain)
 
-    #
     # # save np.load
     # np_load_old = np.load
     # # modify the default parameters of np.load
@@ -151,6 +149,7 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
     # np.load = np_load_old
     #
     # episodes_gain = data['episodes_gain']
+    # # episodes_gain[-1] = episodes_gain[-1][:len(episodes_gain[0])]
 
     fig, ax = plt.subplots()
     line = []
@@ -163,14 +162,30 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000):
     plt.title("Total Reward Vs. Training episodes")
     plt.grid()
     ax.legend()
-    plt.savefig('Answers/Q4_5')
-    plt.close()
+    if save:
+        plt.savefig('Answers/Q4_5')
+        plt.close()
+    else:
+        plt.show()
 
+    for ii, eps in enumerate(epsilons):
+        fig, ax = plt.subplots()
+        line.insert(ii, ax.plot(range(len(episodes_gain[ii])), episodes_gain[ii], linewidth=1))
+
+        plt.xlabel('Episode')
+        plt.ylabel("Total Reward")
+        plt.title("Total Reward Vs. Training episodes for $\\epsilon$ = " + str(eps))
+        plt.grid()
+        if save:
+            plt.savefig('Answers/Q4_5_eps'+str(eps)+'.png')
+            plt.close()
+        else:
+            plt.show()
 
 if __name__ == '__main__':
-    max_episodes = 500
-    seeds = [123] #, 234, 123]
+    max_episodes = 200
+    seeds = [123, 234, 345]
     epsilons = [1, 0.75, 0.5, 0.3, 0.01]
-    # Q_learning_eval(seeds, max_episodes=max_episodes)
-    Q_learning_exploration_eval(seeds, epsilons, max_episodes=max_episodes)
+    Q_learning_eval(seeds, max_episodes=max_episodes, save=False)
+    Q_learning_exploration_eval([123], epsilons, max_episodes=max_episodes, save=False)
 
