@@ -74,7 +74,7 @@ def modify_reward(reward):
     return reward
 
 
-def run_episode(env, solver, is_train=True, epsilon=None, max_steps=200, render=False):
+def run_episode(env, solver, is_train=True, epsilon=None, max_steps=200, render=False, start_at_bottom=False):
     episode_gain = 0
     deltas = []
     if is_train:
@@ -83,6 +83,9 @@ def run_episode(env, solver, is_train=True, epsilon=None, max_steps=200, render=
     else:
         start_position = -0.5
         start_velocity = np.random.uniform(-env.max_speed / 100., env.max_speed / 100.)
+    if start_at_bottom:
+        start_position = -0.5
+        start_velocity = 0
     state = env.reset_specific(start_position, start_velocity)
     step = 0
     if render:

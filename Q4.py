@@ -5,14 +5,13 @@ from mountain_car_with_data_collection import MountainCarWithResetEnv
 from q_learn_mountain_car import Solver
 from q_learn_mountain_car import run_episode
 
-def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000):
+def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000, epsilon_decrease = 1., start_at_bottom=False):
     env = MountainCarWithResetEnv()
     np.random.seed(seed)
     env.seed(seed)
 
     gamma = 0.999
     learning_rate = 0.05
-    epsilon_decrease = 1.
     epsilon_min = 0.05
 
     solver = Solver(
@@ -30,7 +29,8 @@ def run_Q_learning(seed, epsilon_current=0.1, max_episodes=10000):
     episodes_gain = []
     episodes_bellman_err = []
     for episode_index in range(1, max_episodes + 1):
-        episode_gain, mean_delta = run_episode(env, solver, is_train=True, epsilon=epsilon_current)
+        episode_gain, mean_delta = run_episode(env, solver, is_train=True, epsilon=epsilon_current,
+                                               start_at_bottom=start_at_bottom)
         episodes_gain.append(episode_gain)
         # reduce epsilon if required
         epsilon_current *= epsilon_decrease
@@ -117,7 +117,8 @@ def Q_learning_eval(seeds, epsilon_current=0.1, max_episodes=10000, save=True):
         else:
             plt.show()
 
-def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000, save=True):
+def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000, epsilon_decrease = 1., start_at_bottom=False,
+                                save=True):
 
     episodes_gain = []
 
@@ -125,7 +126,8 @@ def Q_learning_exploration_eval(seeds, epsilons, max_episodes=10000, save=True):
         episodes_gain_tmp = []
         episodes = max_episodes
         for seed in seeds:
-            gain, rate, val, err = run_Q_learning(seed, epsilon_current=epsilon, max_episodes=episodes)
+            gain, rate, val, err = run_Q_learning(seed, epsilon_current=epsilon, max_episodes=episodes,
+                                                  epsilon_decrease=epsilon_decrease, start_at_bottom=start_at_bottom)
             episodes = min(episodes, len(gain))
             episodes_gain_tmp.append(gain)
 
@@ -187,5 +189,5 @@ if __name__ == '__main__':
     seeds = [123, 234, 345]
     epsilons = [1, 0.75, 0.5, 0.3, 0.01]
     Q_learning_eval(seeds, max_episodes=max_episodes, save=False)
-    Q_learning_exploration_eval([123], epsilons, max_episodes=max_episodes, save=False)
+    Q_learning_exploration_eval([123], epsilons, max_episodes=max_episodes, start_at_bottom=False, save=False)
 
